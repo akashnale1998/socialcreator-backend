@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
+const { setServers } = require("node:dns/promises");
 require('dotenv').config();
 
+setServers(["8.8.8.8", "8.8.4.4"]);
+
+
 const connectDB = async () => {
+  console.log(process.env.MONGODB_URI);
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       maxPoolSize: 10,
