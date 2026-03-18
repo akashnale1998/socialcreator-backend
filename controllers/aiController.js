@@ -110,11 +110,20 @@ exports.generateScript = async (req, res) => {
     Return the response in this EXACT JSON format:
     {
       "hook": "The opening hook",
+      "viralScore": 82,
+      "scriptSections": [
+        { "time": "0-3s", "label": "🔥 Viral Hook", "text": "The hook text here" },
+        { "time": "3-10s", "label": "💡 Tip 1", "text": "First value point" },
+        { "time": "10-25s", "label": "⚡ Tip 2", "text": "Second value point or core content" },
+        { "time": "25-30s", "label": "🎯 Call to Action", "text": "Final CTA" }
+      ],
       "script": "The full script body",
       "cta": "Call to action",
       "caption": "Suggested caption",
       "hashtags": ["tag1", "tag2", "tag3"]
-    }`;
+    }
+    
+    Ensure the scriptSections array matches the total duration and provides a clear timeline for the creator.`;
 
     // Check Plan Access
     if (!checkPlanAccess(req.fullUser, 'script-generator')) {
@@ -238,8 +247,37 @@ exports.analyzeScript = async (req, res) => {
   try {
     const { script, platform } = req.body;
     const prompt = `Analyze this video script for ${platform}: "${script}".
-    Provide feedback on pacing, hooks, and retention.
-    Return JSON: { "score": 85, "feedback": "...", "suggestions": ["...", "..."] }`;
+    
+    1. Detect the language of the script (e.g. Hindi, English, Hinglish).
+    2. Provide a viral score (0-100).
+    3. Provide feedback structured into "strengths" and "weaknesses".
+    4. Provide 3 specific, actionable improvement suggestions with a title and description.
+    5. Provide a "Before" vs "After" comparison showing how the script looks after applying the main improvements.
+    
+    CRITICAL: 
+    - The "detectedLanguage" should be a string like "Hindi", "English", or "Hinglish".
+    - The "languageFlag" should be an emoji flag for the detected language (e.g. 🇮🇳 for Hindi/Hinglish, 🇺🇸 for English).
+    - ALL feedback, suggestions, and the "After" version of the script MUST be in the SAME language as the original script.
+    
+    Return JSON: 
+    { 
+      "score": 85, 
+      "detectedLanguage": "Hindi",
+      "languageFlag": "🇮🇳",
+      "feedback": {
+        "strengths": ["...", "..."],
+        "weaknesses": ["...", "..."]
+      },
+      "suggestions": [
+        { "title": "Fix Hook", "text": "Move the problem statement...", "id": "hook" },
+        { "title": "Improve CTA", "text": "Add a clear...", "id": "cta" },
+        { "title": "Better Flow", "text": "...", "id": "flow" }
+      ],
+      "beforeAfter": {
+        "before": "Original script here",
+        "after": "Improved script here"
+      }
+    }`;
 
     // Check Plan Access
     if (!checkPlanAccess(req.fullUser, 'scripts')) {
