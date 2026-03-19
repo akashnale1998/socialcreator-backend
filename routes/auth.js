@@ -27,7 +27,7 @@ const handleOAuthCallback = (req, res) => {
 
   // Redirect to dashboard with token in a way frontend can read it
   // Since we use localStorage, we might need a temporary landing page or append to URL
-  res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/login?token=${token}`);
+  res.redirect(`${process.env.FRONTEND_URL || 'https://socialcreatorapp.com'}/login?token=${token}`);
 };
 
 router.get('/google/callback', Passport.authenticate('google', { session: false, failureRedirect: '/login' }), handleOAuthCallback);
